@@ -1,0 +1,6 @@
+obj/
+bin/
+/.vs/
+/.idea/
+.vs/
+/AuthService/Properties/launchSettings.json
