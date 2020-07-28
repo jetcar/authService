@@ -49,6 +49,7 @@ namespace AuthServiceTests
             {
                 serviceScope.Dispose();
             }
+            _currentScope.Clear();
         }
 
         public T GetService<T>()

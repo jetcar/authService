@@ -1,5 +1,6 @@
 ﻿using System;
 using AuthService.services;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 
@@ -11,7 +12,7 @@ namespace AuthService.Security
         public static string SessionData = "sessionData";
 
         private readonly ISessionRepository _sessionRepository;
-        private IUsersRepository _usersRepository;
+        private readonly IUsersRepository _usersRepository;
 
         public AuthFilter(ISessionRepository sessionRepository, IUsersRepository usersRepository)
         {
@@ -42,7 +43,7 @@ namespace AuthService.Security
                 context.Result = new ForbidResult();
                 return;
             }
-            if (!_sessionRepository.CheckSession(tokenDto.SessionId))
+            if (!_sessionRepository.CheckSession(tokenDto.SessionId, tokenDto.UserId))
             {
                 context.Result = new ForbidResult();
                 return;
@@ -54,7 +55,8 @@ namespace AuthService.Security
                 context.Result = new ForbidResult();
                 return;
             }
-            context.HttpContext.Items[SessionData] = userDb;
+            
+            context.HttpContext.Items[SessionData] = tokenDto;
 
         }
     }

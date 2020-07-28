@@ -15,11 +15,11 @@ namespace AuthService.services
             _dbContext = dbContext;
         }
 
-        public bool CheckSession(long sessionId)
+        public bool CheckSession(long sessionId, int userId)
         {
             using (_dbContext.Database.BeginTransaction())
             {
-                return _dbContext.Sessions.Any(x => x.Id == sessionId && x.Active);
+                return _dbContext.Sessions.Any(x => x.Id == sessionId && x.UserId == userId && x.Active);
             }
         }
 
@@ -34,11 +34,26 @@ namespace AuthService.services
                 return sessionDb.Id;
             }
         }
+
+        public void DeactivateSession(long sessionId, int userId)
+        {
+            using (var transaction = _dbContext.Database.BeginTransaction())
+            {
+                 var sessionDb= _dbContext.Sessions.FirstOrDefault(x => x.Id == sessionId && x.UserId == userId);
+                 if (sessionDb != null)
+                 {
+                     sessionDb.Active = false;
+                 }
+                _dbContext.SaveChanges();
+                transaction.Commit();
+            }
+        }
     }
 
     public interface ISessionRepository
     {
-        bool CheckSession(long sessionId);
+        bool CheckSession(long sessionId, int tokenDtoUserId);
         long NewSession(int userId);
+        void DeactivateSession(long sessionId, int userId);
     }
 }

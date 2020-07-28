@@ -1,0 +1,9 @@
+﻿login/logout
+simple register
+user profile update
+demo smartId
+demo mobileId
+Idcard (separate virtual path)
+azure CD
+load testing 1mil users
+optimizations

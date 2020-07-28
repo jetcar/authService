@@ -50,5 +50,18 @@ namespace AuthService.Controllers
 
             return _mapper.Map<UserDto>(user);
         }
+
+        [HttpGet]
+        [AuthFilterRequirement]
+        public bool Logout()
+        {
+            var session = (TokenDto)HttpContext.Items[AuthFilter.SessionData];
+            _sessionRepository.DeactivateSession(session.SessionId, session.UserId);
+            this.Response.Cookies.Delete(AuthFilter.TokenHeader);
+
+            return true;
+
+
+        }
     }
 }

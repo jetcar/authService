@@ -11,7 +11,7 @@ namespace AuthService.DbModel
             UserId = userId;
         }
 
-        public int Id { get; set; }
+        public long Id { get; set; }
         public int UserId { get; set; }
         public bool Active { get; set; }
     }

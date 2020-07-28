@@ -13,6 +13,7 @@ namespace AuthService
             this.CreateMap<UserDb, TokenDto>()
                 .ForMember(x=>x.SessionId, c=>c.Ignore())
                 .ForMember(x=>x.Password, c=>c.MapFrom(e=>e.PasswordHash))
+                .ForMember(x=>x.UserId, c=>c.MapFrom(e=>e.Id))
                 .ForMember(x=>x.ExpirationTime, c=>c.Ignore())
                 ;
         }
