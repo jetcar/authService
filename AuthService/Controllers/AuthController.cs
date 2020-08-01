@@ -22,12 +22,14 @@ namespace AuthService.Controllers
         private readonly Logger _logger = NLog.LogManager.GetCurrentClassLogger();
         private IUsersRepository _usersRepository;
         private ISessionRepository _sessionRepository;
-        IMapper _mapper;
-        public AuthController(IUsersRepository usersRepository, IMapper mapper, ISessionRepository sessionRepository)
+        private IMapper _mapper;
+        private SessionDto _sessionDto;
+        public AuthController(IUsersRepository usersRepository, IMapper mapper, ISessionRepository sessionRepository, SessionDto sessionDto)
         {
             _usersRepository = usersRepository;
             _mapper = mapper;
             _sessionRepository = sessionRepository;
+            _sessionDto = sessionDto;
         }
 
         [HttpPost]
@@ -43,7 +45,7 @@ namespace AuthService.Controllers
             if (!user.ValidatePassword(loginDto.Password))
                 throw new UnauthorizedAccessException();
 
-            var tokenDto = _mapper.Map<TokenDto>(user);
+            var tokenDto = _mapper.Map<SessionDto>(user);
             tokenDto.SessionId = _sessionRepository.NewSession(user.Id);
             tokenDto.ExpirationTime = DateTime.UtcNow.AddMinutes(AuthFilter.SessionLength);
             this.Response.Cookies.Append(AuthFilter.TokenHeader, JwtHelper.Encode(tokenDto), new CookieOptions() { Secure = true, HttpOnly = true });
@@ -55,8 +57,7 @@ namespace AuthService.Controllers
         [AuthFilterRequirement]
         public bool Logout()
         {
-            var session = (TokenDto)HttpContext.Items[AuthFilter.SessionData];
-            _sessionRepository.DeactivateSession(session.SessionId, session.UserId);
+            _sessionRepository.DeactivateSession(_sessionDto.SessionId, _sessionDto.UserId);
             this.Response.Cookies.Delete(AuthFilter.TokenHeader);
 
             return true;

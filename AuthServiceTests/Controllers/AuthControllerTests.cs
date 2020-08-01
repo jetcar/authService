@@ -41,7 +41,7 @@ namespace AuthServiceTests.Controllers
             var token = ((TestCookies)controller.Response.Cookies).Get(AuthFilter.TokenHeader);
             var authorizationFilterContext = new AuthorizationFilterContext(new ActionContext(new TestHttpContext(), new RouteData(), new ActionDescriptor(), new ModelStateDictionary()), new List<IFilterMetadata>());
             ((TestCoockieCollection)authorizationFilterContext.HttpContext.Request.Cookies).Add(AuthFilter.TokenHeader, token);
-            new AuthFilter(GetService<ISessionRepository>(), GetService<IUsersRepository>()).OnAuthorization(authorizationFilterContext);
+            new AuthFilter(GetService<ISessionRepository>(), GetService<IUsersRepository>(),new SessionDto()).OnAuthorization(authorizationFilterContext);
 
             Assert.IsFalse(authorizationFilterContext.Result is ForbidResult);
 
@@ -63,8 +63,7 @@ namespace AuthServiceTests.Controllers
             dbContext.SaveChanges();
             var userDto = controller.Login(new LoginDto() { Username = userDb.Username, Password = "test1234" });
             var token = ((TestCookies)controller.Response.Cookies).Get(AuthFilter.TokenHeader);
-            controller = GetController<AuthController>();
-            controller.HttpContext.Items[AuthFilter.SessionData] = JwtHelper.Decode<TokenDto>(token);
+            controller = GetController<AuthController>(token);
             //act
             controller.Logout();
             //assert
@@ -72,17 +71,18 @@ namespace AuthServiceTests.Controllers
 
             var authorizationFilterContext = new AuthorizationFilterContext(new ActionContext(new TestHttpContext(), new RouteData(), new ActionDescriptor(), new ModelStateDictionary()), new List<IFilterMetadata>());
             ((TestCoockieCollection)authorizationFilterContext.HttpContext.Request.Cookies).Add(AuthFilter.TokenHeader, token);
-            new AuthFilter(GetService<ISessionRepository>(), GetService<IUsersRepository>()).OnAuthorization(authorizationFilterContext);
+            new AuthFilter(GetService<ISessionRepository>(), GetService<IUsersRepository>(),new SessionDto()).OnAuthorization(authorizationFilterContext);
 
             Assert.IsTrue(authorizationFilterContext.Result is ForbidResult);
         }
+        
         [Test]
         public void TokenCheckFailTest()
         {
-            var token = JwtHelper.Encode(new TokenDto());
+            var token = JwtHelper.Encode(new SessionDto());
             var authorizationFilterContext = new AuthorizationFilterContext(new ActionContext(new TestHttpContext(), new RouteData(), new ActionDescriptor(), new ModelStateDictionary()), new List<IFilterMetadata>());
             ((TestCoockieCollection)authorizationFilterContext.HttpContext.Request.Cookies).Add(AuthFilter.TokenHeader, token);
-            new AuthFilter(GetService<ISessionRepository>(), GetService<IUsersRepository>()).OnAuthorization(authorizationFilterContext);
+            new AuthFilter(GetService<ISessionRepository>(), GetService<IUsersRepository>(),new SessionDto()).OnAuthorization(authorizationFilterContext);
 
             Assert.IsTrue(authorizationFilterContext.Result is ForbidResult);
 

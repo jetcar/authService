@@ -9,15 +9,16 @@ namespace AuthService.Security
     public class AuthFilter : IAuthorizationFilter
     {
         public static string TokenHeader = "token";
-        public static string SessionData = "sessionData";
 
         private readonly ISessionRepository _sessionRepository;
         private readonly IUsersRepository _usersRepository;
+        private SessionDto _sessionDto;
 
-        public AuthFilter(ISessionRepository sessionRepository, IUsersRepository usersRepository)
+        public AuthFilter(ISessionRepository sessionRepository, IUsersRepository usersRepository, SessionDto sessionDto)
         {
             _sessionRepository = sessionRepository;
             _usersRepository = usersRepository;
+            _sessionDto = sessionDto;
         }
 
         public static int SessionLength = 15;
@@ -32,7 +33,7 @@ namespace AuthService.Security
                 return;
             }
 
-            var tokenDto = JwtHelper.Decode<TokenDto>(cookie);
+            var tokenDto = JwtHelper.Decode<SessionDto>(cookie);
             if (tokenDto == null)
             {
                 context.Result = new ForbidResult();
@@ -55,9 +56,12 @@ namespace AuthService.Security
                 context.Result = new ForbidResult();
                 return;
             }
-            
-            context.HttpContext.Items[SessionData] = tokenDto;
 
+            _sessionDto.Username = tokenDto.Username;
+            _sessionDto.ExpirationTime = tokenDto.ExpirationTime;
+            _sessionDto.Password = tokenDto.Password;
+            _sessionDto.SessionId = tokenDto.SessionId;
+            _sessionDto.UserId = tokenDto.UserId;
         }
     }
 }

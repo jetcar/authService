@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AuthService.Controllers;
 using AuthService.DbModel;
+using AuthService.Dto;
 using AutoMapper;
 
 namespace AuthService.services
@@ -46,8 +48,8 @@ namespace AuthService.services
         {
             using (var transaction = _dbContext.Database.BeginTransaction())
             {
-                var existringUser = _dbContext.Users.FirstOrDefault(x => x.Username == userData.Username);
-                if (existringUser != null)
+                var existingUser = _dbContext.Users.FirstOrDefault(x => x.Username == userData.Username);
+                if (existingUser != null)
                     throw new ControllerException("Username", ErrorCodes.UsernameNotUnique);
 
                 var newUser = _mapper.Map<UserDb>(userData);
@@ -58,6 +60,22 @@ namespace AuthService.services
                 return newUser;
             }
         }
+
+        public UserDb UpdateUser(int userId, EditUserDto userDto)
+        {
+            using (var transaction = _dbContext.Database.BeginTransaction())
+            {
+                var existingUser = _dbContext.Users.FirstOrDefault(x => x.Id == userId);
+                if (existingUser == null)
+                    throw new UnauthorizedAccessException();
+
+                _mapper.Map(userDto, existingUser);
+                existingUser.SetPassword(userDto.NewPassword);
+                _dbContext.SaveChanges();
+                transaction.Commit();
+                return existingUser;
+            }
+        }
     }
 
     public interface IUsersRepository
@@ -66,5 +84,6 @@ namespace AuthService.services
         UserDb GetUserByUsernameAndPassword(string username, string password);
         UserDb GetUserById(int userId);
         UserDb AddNewUser(RegisterDto userData);
+        UserDb UpdateUser(int userId, EditUserDto userDto);
     }
 }

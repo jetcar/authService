@@ -15,19 +15,30 @@ namespace AuthService.Controllers
     {
         private IUsersRepository _usersRepository;
         private IMapper _mapper;
+        private SessionDto _sessionDto;
 
-        public UserProfileController(IUsersRepository usersRepository, IMapper mapper)
+        public UserProfileController(IUsersRepository usersRepository, IMapper mapper, SessionDto sessionDto)
         {
             _usersRepository = usersRepository;
             _mapper = mapper;
+            _sessionDto = sessionDto;
         }
 
 
         [HttpGet]
         public UserDto UserProfile()
         {
-            var session = (UserDb)HttpContext.Items[AuthFilter.SessionData];
-            var user = _usersRepository.GetUserById(session.Id);
+            var user = _usersRepository.GetUserById(_sessionDto.UserId);
+            if (user == null)
+                throw new UnauthorizedAccessException();
+
+
+            return _mapper.Map<UserDto>(user);
+        }
+        [HttpPost]
+        public UserDto UpdateUserProfile([FromBody] EditUserDto userDto)
+        {
+            var user = _usersRepository.UpdateUser(_sessionDto.UserId,userDto);
             if (user == null)
                 throw new UnauthorizedAccessException();
 

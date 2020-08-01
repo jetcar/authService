@@ -1,5 +1,4 @@
-﻿user profile update
-demo smartId
+﻿demo smartId
 demo mobileId
 Idcard (separate virtual path)
 azure CD

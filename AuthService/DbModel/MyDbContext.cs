@@ -1,4 +1,5 @@
 ﻿using System;
+using AuthService.Security;
 using Microsoft.EntityFrameworkCore;
 using NLog;
 
@@ -6,7 +7,17 @@ namespace AuthService.DbModel
 {
     public class MyDbContext : DbContext
     {
+        private readonly SessionDto _sessionDto;
         private readonly Logger _logger = NLog.LogManager.GetCurrentClassLogger();
+
+        public MyDbContext(SessionDto sessionDto)
+        {
+            _sessionDto = sessionDto;
+        }
+
+        public MyDbContext()
+        {
+        }
 
         public DbSet<UserDb> Users { get; set; }
         public DbSet<SessionDb> Sessions { get; set; }
@@ -22,8 +33,8 @@ namespace AuthService.DbModel
             }
             else
             {
-                optionsBuilder.UseNpgsql(
-                    $"Host=localhost;Database=my_db;Username=admin;Password=q");
+                //test db
+                optionsBuilder.UseNpgsql($"Host=localhost;Database=my_db;Username=admin;Password=q");
 
             }
         }
@@ -38,7 +49,7 @@ namespace AuthService.DbModel
         {
             try
             {
-                SetVersioning();
+                SetAuditables();
                 this.BulkSaveChanges();
             }
            
@@ -50,7 +61,7 @@ namespace AuthService.DbModel
             return 0;
         }
 
-        private void SetVersioning()
+        private void SetAuditables()
         {
             var currentDate = DateTime.UtcNow;
             var entities = this.ChangeTracker.Entries<BaseEntity>();
@@ -58,6 +69,11 @@ namespace AuthService.DbModel
             {
                 if(entityEntry.State == EntityState.Added)
                     entityEntry.Entity.CreatedAt = currentDate;
+                if (entityEntry.State == EntityState.Modified)
+                {
+                    entityEntry.Entity.ModifiedAt = currentDate;
+                    entityEntry.Entity.ModifiedBy = _sessionDto?.UserId;
+                }
             }
 
         }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using AuthService.Controllers;
 using AuthService.DbModel;
+using AuthService.Security;
 using AuthService.services;
 using AutoMapper;
 using Microsoft.AspNetCore.Builder;
@@ -31,11 +32,16 @@ namespace AuthService
             var config = new MapperConfiguration(new MapperProfile());
             var mapper = config.CreateMapper();
             services.AddSingleton<IMapper>(mapper);
-            services.AddScoped<MyDbContext>();
+            services.AddScoped<SessionDto>();
+
             services.AddScoped<AuthController>();
             services.AddScoped<SignUpController>();
+            services.AddScoped<UserProfileController>();
+
+            services.AddScoped<MyDbContext>();
             services.AddScoped<IUsersRepository, UsersRepository>();
             services.AddScoped<ISessionRepository, SessionRepository>();
+
             services.AddControllers();
             services.AddSwaggerGen();
             services.AddMvc(options =>

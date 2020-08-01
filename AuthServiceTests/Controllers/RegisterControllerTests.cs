@@ -40,7 +40,7 @@ namespace AuthServiceTests.Controllers
             var token = ((TestCookies)authController.Response.Cookies).Get(AuthFilter.TokenHeader);
             var authorizationFilterContext = new AuthorizationFilterContext(new ActionContext(new TestHttpContext(), new RouteData(), new ActionDescriptor(), new ModelStateDictionary()), new List<IFilterMetadata>());
             ((TestCoockieCollection)authorizationFilterContext.HttpContext.Request.Cookies).Add(AuthFilter.TokenHeader, token);
-            new AuthFilter(GetService<ISessionRepository>(), GetService<IUsersRepository>()).OnAuthorization(authorizationFilterContext);
+            new AuthFilter(GetService<ISessionRepository>(), GetService<IUsersRepository>(),new SessionDto()).OnAuthorization(authorizationFilterContext);
 
             Assert.IsFalse(authorizationFilterContext.Result is ForbidResult);
 
