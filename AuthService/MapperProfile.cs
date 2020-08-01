@@ -1,3 +1,5 @@
+using System;
+using AuthService.Controllers;
 using AuthService.DbModel;
 using AuthService.Dto;
 using AuthService.Security;
@@ -16,6 +18,15 @@ namespace AuthService
                 .ForMember(x=>x.UserId, c=>c.MapFrom(e=>e.Id))
                 .ForMember(x=>x.ExpirationTime, c=>c.Ignore())
                 ;
+
+            this.CreateMap<RegisterDto, UserDb>()
+                .ForMember(x => x.Id, c => c.Ignore())
+                .ForMember(x => x.PasswordSalt, c => c.MapFrom( e=> Guid.NewGuid().ToString()))
+                .ForMember(x => x.PasswordHash, c => c.Ignore())
+                .ForMember(x => x.CreatedAt, c => c.Ignore())
+                ;
+
+
         }
     }
 }

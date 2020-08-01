@@ -33,10 +33,15 @@ namespace AuthService
             services.AddSingleton<IMapper>(mapper);
             services.AddScoped<MyDbContext>();
             services.AddScoped<AuthController>();
+            services.AddScoped<SignUpController>();
             services.AddScoped<IUsersRepository, UsersRepository>();
             services.AddScoped<ISessionRepository, SessionRepository>();
             services.AddControllers();
             services.AddSwaggerGen();
+            services.AddMvc(options =>
+            {
+                options.Filters.Add(typeof(ValidatorActionFilter));
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

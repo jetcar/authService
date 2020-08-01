@@ -1,6 +1,4 @@
-﻿login/logout
-simple register
-user profile update
+﻿user profile update
 demo smartId
 demo mobileId
 Idcard (separate virtual path)
