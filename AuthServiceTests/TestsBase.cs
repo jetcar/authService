@@ -2,13 +2,15 @@ using System;
 using System.Collections.Generic;
 using AuthService;
 using AuthService.Controllers;
-using AuthService.DbModel;
-using AuthService.Dto;
 using AuthService.Security;
 using AuthServiceTests.Controllers;
+using CommonTools.Utils;
+using Dto;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
+using Repository.DbModel;
 
 namespace AuthServiceTests
 {
@@ -38,12 +40,9 @@ namespace AuthServiceTests
 
                 authService.ConfigureServices(services);
                 _serviceProvider = services.BuildServiceProvider();
-
             }
 
             _currentScope.Add(_serviceProvider.CreateScope());
-
-
         }
 
         [TearDown]
@@ -61,10 +60,12 @@ namespace AuthServiceTests
             var scope = _serviceProvider.CreateScope();
             return scope.ServiceProvider.GetService<T>();
         }
+
         public T GetScopedService<T>()
         {
             return _currentScope[0].ServiceProvider.GetService<T>();
         }
+
         public T GetController<T>(string token = null) where T : ControllerBase
         {
             var controller = GetScopedService<T>();
@@ -105,6 +106,5 @@ namespace AuthServiceTests
             password = dto.Password;
             var responseDto = controller.Register(dto);
         }
-
     }
 }

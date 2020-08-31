@@ -1,8 +1,9 @@
 ﻿using System;
-using AuthService.services;
 using AutoMapper;
+using Dto;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Repository.Repositories;
 
 namespace AuthService.Security
 {
@@ -22,7 +23,6 @@ namespace AuthService.Security
         }
 
         public static int SessionLength = 15;
-
 
         public void OnAuthorization(AuthorizationFilterContext context)
         {

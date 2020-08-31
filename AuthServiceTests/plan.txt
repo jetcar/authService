@@ -1,5 +1,5 @@
-﻿demo smartId
-demo mobileId
+﻿demo mobileId
+demo smartId
 Idcard (separate virtual path)
 azure CD
 load testing 1mil users

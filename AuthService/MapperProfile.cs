@@ -1,9 +1,9 @@
 using System;
 using AuthService.Controllers;
-using AuthService.DbModel;
-using AuthService.Dto;
 using AuthService.Security;
 using AutoMapper.Configuration;
+using Dto;
+using Repository.DbModel;
 
 namespace AuthService
 {
@@ -38,8 +38,6 @@ namespace AuthService
                .ForMember(x => x.ModifiedAt, c => c.Ignore())
                .ForMember(x => x.Username, c => c.Ignore())
                ;
-
-
         }
     }
 }

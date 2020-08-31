@@ -1,15 +1,14 @@
 ﻿using System;
-using AuthService.DbModel;
-using AuthService.Dto;
 using AuthService.Security;
-using AuthService.services;
 using AutoMapper;
+using Dto;
 using Microsoft.AspNetCore.Mvc;
+using Repository.Repositories;
 
 namespace AuthService.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     [AuthFilterRequirement]
     public class UserProfileController : ControllerBase
     {
@@ -24,24 +23,24 @@ namespace AuthService.Controllers
             _sessionDto = sessionDto;
         }
 
-
         [HttpGet]
+        [Route("user")]
         public UserDto UserProfile()
         {
             var user = _usersRepository.GetUserById(_sessionDto.UserId);
             if (user == null)
                 throw new UnauthorizedAccessException();
 
-
             return _mapper.Map<UserDto>(user);
         }
+
         [HttpPost]
+        [Route("user")]
         public UserDto UpdateUserProfile([FromBody] EditUserDto userDto)
         {
-            var user = _usersRepository.UpdateUser(_sessionDto.UserId,userDto);
+            var user = _usersRepository.UpdateUser(_sessionDto.UserId, userDto);
             if (user == null)
                 throw new UnauthorizedAccessException();
-
 
             return _mapper.Map<UserDto>(user);
         }

@@ -1,29 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using AuthService.DbModel;
-using AuthService.Dto;
 using AuthService.Security;
-using AuthService.services;
 using AutoMapper;
+using Dto;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using NLog;
+using Repository.Repositories;
 
 namespace AuthService.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class AuthController : ControllerBase
     {
-
-
         private readonly Logger _logger = NLog.LogManager.GetCurrentClassLogger();
         private IUsersRepository _usersRepository;
         private ISessionRepository _sessionRepository;
         private IMapper _mapper;
         private SessionDto _sessionDto;
+
         public AuthController(IUsersRepository usersRepository, IMapper mapper, ISessionRepository sessionRepository, SessionDto sessionDto)
         {
             _usersRepository = usersRepository;
@@ -33,6 +31,7 @@ namespace AuthService.Controllers
         }
 
         [HttpPost]
+        [Route("login")]
         public UserDto Login([FromBody] LoginDto loginDto)
         {
             if (loginDto == null)
@@ -55,14 +54,13 @@ namespace AuthService.Controllers
 
         [HttpGet]
         [AuthFilterRequirement]
+        [Route("logout")]
         public bool Logout()
         {
             _sessionRepository.DeactivateSession(_sessionDto.SessionId, _sessionDto.UserId);
             this.Response.Cookies.Delete(AuthFilter.TokenHeader);
 
             return true;
-
-
         }
     }
 }

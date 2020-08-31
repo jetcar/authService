@@ -19,6 +19,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\AuthService\AuthService.csproj" />
+    <ProjectReference Include="..\MobileId\MobileId.csproj" />
   </ItemGroup>
 
   <ItemGroup>

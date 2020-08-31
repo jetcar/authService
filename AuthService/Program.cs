@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using MobileIdApp;
 
 namespace AuthService
 {
@@ -21,9 +22,8 @@ namespace AuthService
                             logging.AddConfiguration(hostingContext.Configuration.GetSection("Logging"));
                             logging.AddDebug();
                         })
-                        .UseStartup<Startup>();
+                        .UseStartup<Startup>()
+                        ;
                 });
-
-
     }
 }

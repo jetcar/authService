@@ -2,17 +2,18 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using AuthService.Controllers;
-using AuthService.DbModel;
 using AuthService.Security;
-using AuthService.services;
 using AutoMapper;
+using Dto;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
+using MobileIdApp;
+using Repository.DbModel;
+using Repository.Repositories;
 using IConfiguration = Microsoft.Extensions.Configuration.IConfiguration;
 
 namespace AuthService
@@ -47,11 +48,22 @@ namespace AuthService
             services.AddMvc(options =>
             {
                 options.Filters.Add(typeof(ValidatorActionFilter));
+            })
+            .AddJsonOptions(opts =>
+            {
+                opts.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
             });
+            MobileIdStartup.ConfigureServices(services);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        {
+            app.Map("", delegate (IApplicationBuilder mappedApp) { Configure1(mappedApp, env); })
+                .Map("/mobileId", delegate (IApplicationBuilder mappedApp) { MobileIdStartup.Configure1(mappedApp, env, "/mobileId"); });
+        }
+
+        public void Configure1(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {

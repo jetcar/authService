@@ -9,14 +9,13 @@ using NUnit.Framework.Internal;
 namespace AuthServiceTests
 {
     [TestFixture]
-     public class MapperTests
+    public class MapperTests
     {
         [Test]
         public void TestConfiguration()
         {
             var config = new MapperConfiguration(new MapperProfile());
             config.AssertConfigurationIsValid();
-            
         }
     }
 }
